@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+
+			<!-- 加载db.properties中的文件内容 -->
+	<context:property-placeholder location="classpath:db.properties"/>	
+	<!-- 加载数据源，dbcp	 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+		<property name="driverClass" value="${jdbc.driver}" />
+		<property name="jdbcUrl" value="${jdbc.url}" />
+		<property name="user" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+    </bean>
+    
+       
+       
+       
+         <!--  Mybatis整合    配置sqlSessionFactory -->
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    		<!-- 数据库连接池 -->
+    	<property name="dataSource" ref="dataSource"></property>
+    		<!-- 加载mybatis中的全部配置文件 -->
+    	<property name="configLocation" value="classpath:sqlMapConfig.xml"></property>
+    	<!-- 指定mybatis,mapper文件位置 -->
+    	<property name="mapperLocations" value="classpath:mapper/*.xml"></property>
+    </bean>
+   
+   
+   
+   <!-- 可以执行批量的sqlSession -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+    	<constructor-arg  name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+    	<constructor-arg name="executorType" value="BATCH"></constructor-arg>
+    	
+    	 
+    </bean>
+    
+       <!--    mapper 配置扫描器，将mybatis接口的实现加入到IOC容器中 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+         	<property name="basePackage" value="com.atguigu.crud.dao"></property>
+    </bean>
+    
+    
+
+</beans>
